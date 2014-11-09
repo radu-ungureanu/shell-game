@@ -4,7 +4,7 @@ var ballPosition;
 var layer;
 var noOfSwapsMade = 0;
 var maxNoOfSwaps = 10;
-var debugEnabled = true;
+var debugEnabled = false;
 var isShuffling = false;
 var isBetting = false;
 var speed = 10;
@@ -289,7 +289,7 @@ function getRandomNumber(min, max) {
 }
 
 function getRandomIndex() {
-    return getRandomNumber(0, cups.length);
+    return getRandomNumber(0, cups.length - 1);
 }
 
 function getRandomBetweenTwoNumbers(values) {
