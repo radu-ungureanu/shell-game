@@ -1,13 +1,9 @@
-window.onload  = function () {
-      window.requestAnimFrame = (function(callback) {
-        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-        function(callback) {
-          window.setTimeout(callback, 1000 / 60);
-        };
-      })();
 
-      function drawRectangle(myRectangle, context) {
-        context.beginPath();
+var myRectangle;
+
+
+    function drawRectangle(myRectangle, context) {
+ 	    context.beginPath();
         context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
         context.fillStyle = '#8ED6FF';
         context.fill();
@@ -15,6 +11,32 @@ window.onload  = function () {
         context.strokeStyle = 'black';
         context.stroke();
       }
+
+$(document).ready(function() {
+
+	window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+      })();
+
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      myRectangle = {
+        x: 0,
+        y: 75,
+        width: 100,
+        height: 50,
+        borderWidth: 5
+      };
+      drawRectangle(myRectangle, context);
+
+});
+
+
+function shuffle() {
+      
       function animate(myRectangle, canvas, context, startTime) {
         // update
         var time = (new Date()).getTime() - startTime;
@@ -37,10 +59,10 @@ window.onload  = function () {
           animate(myRectangle, canvas, context, startTime);
         });
       }
+
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
-
-      var myRectangle = {
+      myRectangle = {
         x: 0,
         y: 75,
         width: 100,
