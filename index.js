@@ -4,9 +4,12 @@ var ballPosition;
 var layer;
 var noOfSwapsMade = 0;
 var maxNoOfSwaps = 10;
-var debugEnabled = false;
+var debugEnabled = true;
 var isShuffling = false;
 var isBetting = false;
+var speed = 10;
+var MAX_SPEED = 12;
+var INCREMENT_SPEED = 1;
 
 var betAmount, cashAmount = 100;
 
@@ -153,10 +156,14 @@ function swapCups(left, right, callback) {
     var rightX = rightCup.getPosition().x;
 
     var anim = new Kinetic.Animation(function (frame) {
-        var newLeftX = leftCup.getPosition().x + 10;
+        var newLeftX = leftCup.getPosition().x + speed;
+        if (newLeftX > rightX)
+            newLeftX = rightX;
         leftCup.setX(newLeftX);
 
-        var newRightX = rightCup.getPosition().x - 10;
+        var newRightX = rightCup.getPosition().x - speed;
+        if (newRightX < leftX)
+            newRightX = leftX;
         rightCup.setX(newRightX);
 
         if (newLeftX >= rightX) {
@@ -203,7 +210,14 @@ function placeBet() {
     isBetting = true;
     cashAmount -= betAmount;
     $("#cash").text(cashAmount);
+    increaseSpeed();
     shuffle();
+}
+
+function increaseSpeed() {
+    speed += INCREMENT_SPEED;
+    if (speed >= MAX_SPEED)
+        speed = MAX_SPEED;
 }
 
 function parseInput() {
