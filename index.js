@@ -8,8 +8,8 @@ var debugEnabled = false;
 var isShuffling = false;
 var isBetting = false;
 var speed = 10;
-var MAX_SPEED = 12;
-var INCREMENT_SPEED = 1;
+var MAX_SPEED = 25;
+var INCREMENT_SPEED = 2;
 var ballSize = 50;
 
 var betAmount, cashAmount = 100;
