@@ -3,7 +3,8 @@ var ball;
 var ballPosition;
 var layer;
 var noOfSwapsMade = 0;
-var maxNoOfSwaps = 10;
+var maxNoOfSwaps = 1;
+var debugEnabled = true;
 
 $(document).ready(function () {
     var stage = new Kinetic.Stage({
@@ -13,14 +14,16 @@ $(document).ready(function () {
     });
     layer = new Kinetic.Layer();
 
-    var border = new Kinetic.Rect({
-        width: stage.getWidth(),
-        height: stage.getHeight(),
-        stroke: 'black',
-        strokeWidth: 4, //Border Size in Pixels
-        fill: '#00FF00' //Background Color
-    });
-    layer.add(border);
+    if (debugEnabled) {
+        var border = new Kinetic.Rect({
+            width: stage.getWidth(),
+            height: stage.getHeight(),
+            stroke: 'black',
+            strokeWidth: 4, //Border Size in Pixels
+            fill: '#00FF00' //Background Color
+        });
+        layer.add(border);
+    }
 
     // create objects
     for (var i = 0; i < 3; i++) {
@@ -35,6 +38,19 @@ $(document).ready(function () {
         });
         cup.on('click', function (e) {
             var clickedIndex = cups.indexOf(e.target);
+
+            ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2);
+            layer.add(ball);
+            var anim = new Kinetic.Animation(function (frame) {
+                _(cups).each(function (cup) {
+                    var newY = cup.getPosition().y - 10;
+                    cup.setY(newY);
+                });
+                if (cups[0].getPosition().y <= 150) {
+                    anim.stop();
+                }
+            }, layer);
+            anim.start();
         });
         cups.push(cup);
     }
@@ -49,8 +65,9 @@ $(document).ready(function () {
         strokeWidth: 4
     });
 
-
-    cups[ballPosition].fill('#C3C3C3');
+    if (debugEnabled) {
+        cups[ballPosition].fill('#C3C3C3');
+    }
 
     // add objects to scene
     layer.add(ball);
@@ -133,8 +150,10 @@ function hideBall() {
 }
 
 function swapRandomCups() {
-    if (noOfSwapsMade >= maxNoOfSwaps)
+    if (noOfSwapsMade >= maxNoOfSwaps) {
+        noOfSwapsMade = 0;
         return;
+    }
     
     noOfSwapsMade++;
     var oldBallPosition = ballPosition;
