@@ -10,6 +10,7 @@ var isBetting = false;
 var speed = 10;
 var MAX_SPEED = 12;
 var INCREMENT_SPEED = 1;
+var ballSize = 50;
 
 var betAmount, cashAmount = 100;
 
@@ -48,8 +49,6 @@ function onImagesLoaded(cupImage, ballImage) {
         var border = new Kinetic.Rect({
             width: stage.getWidth(),
             height: stage.getHeight(),
-            stroke: 'black',
-            strokeWidth: 4, //Border Size in Pixels
             fill: '#00FF00' //Background Color
         });
         layer.add(border);
@@ -76,8 +75,8 @@ function onImagesLoaded(cupImage, ballImage) {
     ball = new Kinetic.Image({
         x: getBallPositionByCupIndex(ballPosition),
         y: 250,
-        width: 50,
-        height: 50,
+        width: ballSize,
+        height: ballSize,
         image: ballImage,
         name: "ball"
     });
@@ -95,7 +94,7 @@ function onImagesLoaded(cupImage, ballImage) {
 }
 
 function raiseCups(selectedCupIndex, callback) {
-    ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2);
+    ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2 - ballSize / 2);
     layer.add(ball);
 
     var selectedCup = cups[selectedCupIndex];
@@ -289,7 +288,7 @@ function getRandomNumber(min, max) {
 }
 
 function getRandomIndex() {
-    return getRandomNumber(0, cups.length - 1);
+    return getRandomNumber(0, cups.length - 1   );
 }
 
 function getRandomBetweenTwoNumbers(values) {
@@ -301,7 +300,7 @@ function getRandomBetweenTwoNumbers(values) {
 
 function getBallPositionByCupIndex(cupIndex) {
     var selectedCup = cups[cupIndex];
-    return selectedCup.getPosition().x + (selectedCup.getWidth() / 3);
+    return selectedCup.getPosition().x + (selectedCup.getWidth() / 2) - ballSize / 2;
 }
 
 
