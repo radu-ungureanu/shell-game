@@ -1,83 +1,57 @@
+var cups = [];
+var ball;
+var ballPosition;
 
-var myRectangle;
+$(document).ready(function () {
+    var stage = new Kinetic.Stage({
+        container: 'container',
+        width: 600,
+        height: 300
+    });
+    var layer = new Kinetic.Layer();
 
-
-    function drawRectangle(myRectangle, context) {
- 	    context.beginPath();
-        context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
-        context.fillStyle = '#8ED6FF';
-        context.fill();
-        context.lineWidth = myRectangle.borderWidth;
-        context.strokeStyle = 'black';
-        context.stroke();
-      }
-
-$(document).ready(function() {
-
-	window.requestAnimFrame = (function(callback) {
-        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-        function(callback) {
-          window.setTimeout(callback, 1000 / 60);
-        };
-      })();
-
-      var canvas = document.getElementById('myCanvas');
-      var context = canvas.getContext('2d');
-      myRectangle = {
-        x: 0,
-        y: 75,
-        width: 100,
-        height: 50,
-        borderWidth: 5
-      };
-      drawRectangle(myRectangle, context);
-
-});
-
-
-function shuffle() {
-      
-      function animate(myRectangle, canvas, context, startTime) {
-        // update
-        var time = (new Date()).getTime() - startTime;
-
-        var linearSpeed = 100;
-        // pixels / second
-        var newX = linearSpeed * time / 1000;
-
-        if(newX < canvas.width - myRectangle.width - myRectangle.borderWidth / 2) {
-          myRectangle.x = newX;
-        }
-
-        // clear
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        drawRectangle(myRectangle, context);
-
-        // request new frame
-        requestAnimFrame(function() {
-          animate(myRectangle, canvas, context, startTime);
+    for (var i = 0; i < 3; i++) {
+        var cup = new Kinetic.Rect({
+            x: 200 * i,
+            y: 200,
+            width: 100,
+            height: 50,
+            fill: '#00D2FF',
+            stroke: 'black',
+            strokeWidth: 4
         });
-      }
+        cups.push(cup);
+    }
+    var ball = new Kinetic.Circle({
+        x: stage.getWidth() / 2,
+        y: 400,
+        radius: 15,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 4
+    });
+    ballPosition = 0;
 
-      var canvas = document.getElementById('myCanvas');
-      var context = canvas.getContext('2d');
-      myRectangle = {
-        x: 0,
-        y: 75,
-        width: 100,
-        height: 50,
-        borderWidth: 5
-      };
+    _(cups).each(function (cup) {
+        layer.add(cup);
+    });
+    layer.add(ball);
 
-      drawRectangle(myRectangle, context);
+    stage.add(layer);
 
-      // wait one second before starting animation
-      setTimeout(function() {
-        var startTime = (new Date()).getTime();
-        animate(myRectangle, canvas, context, startTime);
-      }, 1000);
-};
+    //var amplitude = 150;
+    //var period = 2000;
+    //// in ms
+    //var centerX = stage.width() / 2;
+
+    //var anim = new Kinetic.Animation(function (frame) {
+    //    var cup = cups[0];
+    //    var newX = amplitude * Math.sin(frame.time * 2 * Math.PI / period) + centerX;
+    //    cup.setX(newX);
+    //}, layer);
+
+    //anim.start();
+});
 
 
 
