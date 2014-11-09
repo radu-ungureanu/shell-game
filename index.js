@@ -1,6 +1,7 @@
 var cups = [];
 var ball;
 var ballPosition;
+var layer;
 
 $(document).ready(function () {
     var stage = new Kinetic.Stage({
@@ -8,8 +9,9 @@ $(document).ready(function () {
         width: 600,
         height: 300
     });
-    var layer = new Kinetic.Layer();
+    layer = new Kinetic.Layer();
 
+    // create objects
     for (var i = 0; i < 3; i++) {
         var cup = new Kinetic.Rect({
             x: 200 * i,
@@ -22,16 +24,17 @@ $(document).ready(function () {
         });
         cups.push(cup);
     }
+    ballPosition = getRandomIndex();
     var ball = new Kinetic.Circle({
-        x: stage.getWidth() / 2,
-        y: 400,
+        x: getBallPositionByCupIndex(ballPosition),
+        y: 250,
         radius: 15,
         fill: 'red',
         stroke: 'black',
         strokeWidth: 4
     });
-    ballPosition = 0;
 
+    // add objects to scene
     _(cups).each(function (cup) {
         layer.add(cup);
     });
@@ -39,19 +42,47 @@ $(document).ready(function () {
 
     stage.add(layer);
 
-    //var amplitude = 150;
-    //var period = 2000;
-    //// in ms
-    //var centerX = stage.width() / 2;
-
-    //var anim = new Kinetic.Animation(function (frame) {
-    //    var cup = cups[0];
-    //    var newX = amplitude * Math.sin(frame.time * 2 * Math.PI / period) + centerX;
-    //    cup.setX(newX);
-    //}, layer);
-
-    //anim.start();
+    swapCups(0, 1, function () { swapCups(1, 2); });
 });
+
+function swapCups(left, right, callback) {
+    var leftCup = cups[left];
+    var rightCup = cups[right];
+
+    cups[left] = rightCup;
+    cups[right] = leftCup;
+
+    var leftX = leftCup.getPosition().x;
+    var rightX = rightCup.getPosition().x;
+
+    var anim = new Kinetic.Animation(function (frame) {
+        var newLeftX = leftCup.getPosition().x + 10;
+        leftCup.setX(newLeftX);
+
+        var newRightX = rightCup.getPosition().x - 10;
+        rightCup.setX(newRightX);
+
+        if (newLeftX >= rightX) {
+            anim.stop();
+            if (callback)
+                callback();
+        }
+    }, layer);
+    anim.start();
+}
+
+function getRandomNumber(min, max) {
+    return Math.floor((Math.random() * max) + min);
+}
+
+function getRandomIndex() {
+    return getRandomNumber(0, cups.length);
+}
+
+function getBallPositionByCupIndex(cupIndex) {
+    var selectedCup = cups[cupIndex];
+    return selectedCup.getPosition().x + (selectedCup.getWidth() / 2);
+}
 
 
 
