@@ -3,13 +3,16 @@ var ball;
 var ballPosition;
 var layer;
 var noOfSwapsMade = 0;
-var maxNoOfSwaps = 1;
-var debugEnabled = true;
+var maxNoOfSwaps = 10;
+var debugEnabled = false;
 var isShuffling = false;
+var isBetting = false;
 
 var betAmount, cashAmount = 100;
 
 $(document).ready(function () {
+
+    // Initial cash amount
     $("#cash").text(cashAmount);
 
     var stage = new Kinetic.Stage({
@@ -110,14 +113,15 @@ function raiseOtherCups(selectedCupIndex, callback  ) {
 }
 
 function checkWin(clickedCupIndex) {
+    isBetting = false;
     if (ballPosition == clickedCupIndex) {
-        alert("You won " + 2 * betAmount + "!");
+        $("#output").text("You won " + 2 * betAmount + "!");
         cashAmount += 2 * betAmount;
         $("#cash").text(cashAmount);
         return;
     }
 
-    alert("You lost!");
+    $("#output").text("You lost!");
 }
 
 function swapCups(left, right, callback) {
@@ -171,10 +175,14 @@ function shuffle(callback) {
 }
 
 function placeBet() {
+    if (isBetting)
+        return;
+
     $("#error").text("");
     if (!parseInput())
         return;
 
+    isBetting = true;
     cashAmount -= betAmount;
     $("#cash").text(cashAmount);
     shuffle();

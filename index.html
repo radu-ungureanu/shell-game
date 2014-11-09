@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Shell Game</title>
-        <script src="libraries/kinetic-v5.1.0.min.js"></script>
-        <script src="libraries/jquery-1.11.1.min.js"></script>
-        <script src="libraries/underscore-min.js"></script>
-        <script src="index.js"></script>
-    </head>
-    <body>
-        <div id="container"></div>
-        <div>Cash available: <span id="cash"></span></div>
-        <div>
-            <span>Bet: </span>
-            <input type="text" id="bet" />
-            <button onclick="placeBet()">Bet</button>
-            <span id="error"></span>
-        </div>
-    </body>
+<head>
+    <title>Shell Game</title>
+    <script src="libraries/kinetic-v5.1.0.min.js"></script>
+    <script src="libraries/jquery-1.11.1.min.js"></script>
+    <script src="libraries/underscore-min.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="cf">
+        <h3 class="form-title">Cash: <span id="cash"></span></h3>
+    </div>
+    <div id="container"></div>
+    <p class="width-100-p">
+        <label class="form-label" for="input-title">
+            Your bet
+            <span class="form-required">*</span>
+        </label>
+        <input id="bet" class="form-input width-96-p">
+    </p>
+    <button onclick="placeBet()" class="post-button width-100-p">Bet</button>
+    <h3 id="error" class="title"></h3>
+    <h3 id="output" class="title"></h3>
+</body>
 </html>      
