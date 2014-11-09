@@ -11,7 +11,26 @@ var isBetting = false;
 var betAmount, cashAmount = 100;
 
 $(document).ready(function () {
+    var currentLoaded = 0;
 
+    var cupImage = new Image();
+    cupImage.src = "images/cup.png";
+    cupImage.onload = function () {
+        currentLoaded++;
+        if (currentLoaded == 2)
+            onImagesLoaded(cupImage, ballImage);
+    };
+
+    var ballImage = new Image();
+    ballImage.src = "images/ball.png";
+    ballImage.onload = function () {
+        currentLoaded++;
+        if (currentLoaded == 2)
+            onImagesLoaded(cupImage, ballImage);
+    };
+});
+
+function onImagesLoaded(cupImage, ballImage) {
     // Initial cash amount
     $("#cash").text(cashAmount);
 
@@ -35,14 +54,13 @@ $(document).ready(function () {
 
     // create objects
     for (var i = 0; i < 3; i++) {
-        var cup = new Kinetic.Rect({
+        var cup = new Kinetic.Image({
             x: 50 + 200 * i,
             y: 150,
-            width: 100,
-            height: 50,
-            fill: '#00D2FF',
-            stroke: 'black',
-            strokeWidth: 4
+            width: 130,
+            height: 70,
+            image: cupImage,
+            name: "cup"
         });
         cup.on('click', function (e) {
             var clickedCupIndex = cups.indexOf(e.target);
@@ -52,13 +70,13 @@ $(document).ready(function () {
     }
 
     ballPosition = getRandomIndex();
-    ball = new Kinetic.Circle({
+    ball = new Kinetic.Image({
         x: getBallPositionByCupIndex(ballPosition),
         y: 250,
-        radius: 15,
-        fill: 'red',
-        stroke: 'black',
-        strokeWidth: 4
+        width: 50,
+        height: 50,
+        image: ballImage,
+        name: "ball"
     });
 
     if (debugEnabled) {
@@ -71,7 +89,7 @@ $(document).ready(function () {
         layer.add(cup);
     });
     stage.add(layer);
-});
+}
 
 function raiseCups(selectedCupIndex, callback) {
     ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2);
@@ -269,7 +287,7 @@ function getRandomBetweenTwoNumbers(values) {
 
 function getBallPositionByCupIndex(cupIndex) {
     var selectedCup = cups[cupIndex];
-    return selectedCup.getPosition().x + (selectedCup.getWidth() / 2);
+    return selectedCup.getPosition().x + (selectedCup.getWidth() / 3);
 }
 
 
