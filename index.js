@@ -5,8 +5,13 @@ var layer;
 var noOfSwapsMade = 0;
 var maxNoOfSwaps = 1;
 var debugEnabled = true;
+var isShuffling = false;
+
+var betAmount, cashAmount = 100;
 
 $(document).ready(function () {
+    $("#cash").text(cashAmount);
+
     var stage = new Kinetic.Stage({
         container: 'container',
         width: 600,
@@ -37,20 +42,8 @@ $(document).ready(function () {
             strokeWidth: 4
         });
         cup.on('click', function (e) {
-            var clickedIndex = cups.indexOf(e.target);
-
-            ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2);
-            layer.add(ball);
-            var anim = new Kinetic.Animation(function (frame) {
-                _(cups).each(function (cup) {
-                    var newY = cup.getPosition().y - 10;
-                    cup.setY(newY);
-                });
-                if (cups[0].getPosition().y <= 150) {
-                    anim.stop();
-                }
-            }, layer);
-            anim.start();
+            var clickedCupIndex = cups.indexOf(e.target);
+            raiseCups(clickedCupIndex, function () { checkWin(clickedCupIndex) });
         });
         cups.push(cup);
     }
@@ -76,6 +69,56 @@ $(document).ready(function () {
     });
     stage.add(layer);
 });
+
+function raiseCups(selectedCupIndex, callback) {
+    ball.setX(50 + 200 * ballPosition + cups[0].getWidth() / 2);
+    layer.add(ball);
+
+    var selectedCup = cups[selectedCupIndex];
+    // first - raise clicked cup
+    var anim = new Kinetic.Animation(function (frame) {
+        var newY = selectedCup.getPosition().y - 10;
+        selectedCup.setY(newY);
+
+        if (selectedCup.getPosition().y <= 150) {
+            anim.stop();
+        }
+    }, layer);
+    anim.start();
+
+    setTimeout(function () {
+        raiseOtherCups(selectedCupIndex, callback);
+    }, 200);
+}
+
+function raiseOtherCups(selectedCupIndex, callback  ) {
+    var otherIndexes = getOtherIndexes(selectedCupIndex);
+    var otherCups = [cups[otherIndexes[0]], cups[otherIndexes[1]]];
+
+    var anim = new Kinetic.Animation(function (frame) {
+        _(otherCups).each(function (cup) {
+            var newY = cup.getPosition().y - 10;
+            cup.setY(newY);
+        });
+        if (otherCups[0].getPosition().y <= 150) {
+            anim.stop();
+            if (callback)
+                callback();
+        }
+    }, layer);
+    anim.start();    
+}
+
+function checkWin(clickedCupIndex) {
+    if (ballPosition == clickedCupIndex) {
+        alert("You won " + 2 * betAmount + "!");
+        cashAmount += 2 * betAmount;
+        $("#cash").text(cashAmount);
+        return;
+    }
+
+    alert("You lost!");
+}
 
 function swapCups(left, right, callback) {
     var leftCup = cups[left];
@@ -103,41 +146,69 @@ function swapCups(left, right, callback) {
     anim.start();
 }
 
-function getRandomNumber(min, max) {
-    return Math.floor((Math.random() * (max + 1)) + min);
-}
-
-function getRandomIndex() {
-    return getRandomNumber(0, cups.length);
-}
-
-function getRandomBetweenTwoNumbers(values) {
-    var random = getRandomNumber(0, 1);
-    if (random == 0)
-        return values[0];
-    return values[1];
-}
-
-function getBallPositionByCupIndex(cupIndex) {
-    var selectedCup = cups[cupIndex];
-    return selectedCup.getPosition().x + (selectedCup.getWidth() / 2);
-}
-
-function shuffle() {
+function lowerCups(callback) {
     var anim = new Kinetic.Animation(function (frame) {
         _(cups).each(function (cup) {
             var newY = cup.getPosition().y + 10;
             cup.setY(newY);
         });
         var maxYWithHeight = getOffsetYWithHeight(ball);
-        var currentYWithHeight = getOffsetYWithHeight(cups[0]); 
+        var currentYWithHeight = getOffsetYWithHeight(cups[0]);
         if (currentYWithHeight >= maxYWithHeight) {
             anim.stop();
-            hideBall();
-            swapRandomCups();
+            if (callback)
+                callback();
         }
     }, layer);
     anim.start();
+}
+
+function shuffle(callback) {
+    lowerCups(function () {
+        hideBall();
+        swapRandomCups();
+    });
+}
+
+function placeBet() {
+    $("#error").text("");
+    if (!parseInput())
+        return;
+
+    cashAmount -= betAmount;
+    $("#cash").text(cashAmount);
+    shuffle();
+}
+
+function parseInput() {
+    var bet = $("#bet").val();
+    if (!bet) {
+        $("#error").text("Input can't be empty");
+        return false;
+    }
+
+    if (isNaN(bet)) {
+        $("#error").text("Input is not a number");
+        return false;
+    }
+
+    betAmount = parseInt(bet);
+    if (betAmount < 0) {
+        $("#error").text("Bet must be positive");
+        return false;
+    }
+
+    if (betAmount < 1) {
+        $("#error").text("You cannot play for free");
+        return false;
+    }
+
+    if (betAmount > cashAmount) {
+        $("#error").text("You don't have enough cash");
+        return false;
+    }
+
+    return true;
 }
 
 function getOffsetYWithHeight(kineticObject) {
@@ -171,6 +242,26 @@ function getOtherIndexes(index) {
     if (index == 1)
         return [0, 2];
     return [0, 1];
+}
+
+function getRandomNumber(min, max) {
+    return Math.floor((Math.random() * (max + 1)) + min);
+}
+
+function getRandomIndex() {
+    return getRandomNumber(0, cups.length);
+}
+
+function getRandomBetweenTwoNumbers(values) {
+    var random = getRandomNumber(0, 1);
+    if (random == 0)
+        return values[0];
+    return values[1];
+}
+
+function getBallPositionByCupIndex(cupIndex) {
+    var selectedCup = cups[cupIndex];
+    return selectedCup.getPosition().x + (selectedCup.getWidth() / 2);
 }
 
 
